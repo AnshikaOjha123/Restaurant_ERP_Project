@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="container reports-container mt-4">
+    <h2 class="mb-4">📊 Reports Dashboard</h2>
+    <!-- Sales Overview -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h5 class="card-title">💰 Total Sales</h5>
+                    <h3 class="text-success">₹ {{ total_sales }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h5 class="card-title">📅 Monthly Sales</h5>
+                    <h3 class="text-primary">₹ {{ monthly_sales }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Top Dishes -->
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-dark text-white">
+            🍽 Most Ordered Dishes
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Dish</th>
+                        <th>Total Quantity Ordered</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dish in top_dishes %}
+                    <tr>
+                        <td>{{ dish.menu_item__name }}</td>
+                        <td>{{ dish.total_qty }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="text-center text-muted">No data available</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Low Stock Items -->
+    <div class="card shadow">
+        <div class="card-header bg-warning">
+            ⚠ Low Stock Items
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead class="table-warning">
+                    <tr>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in low_stock %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="text-center text-muted">All items are sufficiently stocked</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
