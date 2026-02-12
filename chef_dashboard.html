@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<h2>Chef Dashboard</h2>
+
+<!-- Info Cards -->
+<div class="card-container d-flex mb-4">
+    <div class="card text-white bg-warning me-3 p-3">
+        <h5>Pending Orders</h5>
+        <h3>{{ pending_orders|length }}</h3>
+    </div>
+    <div class="card text-white bg-info me-3 p-3">
+        <h5>Preparing Orders</h5>
+        <h3>{{ preparing_orders|length }}</h3>
+    </div>
+    <div class="card text-white bg-success me-3 p-3">
+        <h5>Ready Orders</h5>
+        <h3>{{ ready_orders|length }}</h3>
+    </div>
+    <div class="card text-white bg-primary me-3 p-3">
+        <h5>Completed Orders</h5>
+        <h3>{{ completed_orders|length }}</h3>
+    </div>
+</div>
+
+<h3>Customer Feedback</h3>
+<table class="table table-bordered table-sm">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Feedback</th>
+            <th>Rating</th>
+            <th>Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for fb in feedbacks %}
+        <tr>
+            <td>{{ fb.order.id }}</td>
+            <td>{{ fb.order.customer|default:"Guest" }}</td>
+            <td>{{ fb.feedback }}</td>
+            <td>{{ fb.rating }}/5</td>
+            <td>{{ fb.created_at|date:"Y-m-d H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No feedback available</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

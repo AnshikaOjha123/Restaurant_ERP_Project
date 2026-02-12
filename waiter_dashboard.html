@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<h2>Waiter Dashboard</h2>
+<div class="card-container">
+    <div class="card card-warning">
+        <h2>Pending Orders</h2>
+        <p>{{ pending_orders|length }}</p>
+    </div>
+    <div class="card card-success">
+        <h2>Completed Orders</h2>
+        <p>{{ completed_orders|length }}</p>
+    </div>
+</div>
+
+<h2>Pending & Preparing Orders</h2>
+<table class="recent-orders">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Customer</th>
+            <th>Total</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in pending_orders %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.customer|default:"Guest" }}</td>
+            <td>${{ order.total_price }}</td>
+            <td>
+                {{ order.status|capfirst }}
+            </td>
+            <td>waiting for Kitchen</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No pending orders</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+<h2>Ready to Serve</h2>
+<table class="table table-sm">
+  <thead><tr><th>ID</th><th>Items</th><th>Total</th><th>Action</th></tr></thead>
+  <tbody>
+    {% for order in ready_orders %}
+    <tr>
+      <td>{{ order.id }}</td>
+      <td>
+        {% for item in order.items.all %}
+          {{ item.menu_item.name }} ({{ item.quantity }}){% if not forloop.last %}, {% endif %}
+        {% endfor %}
+      </td>
+      <td>₹{{ order.total_price }}</td>
+      <td>
+        <a href="{% url 'order_mark_paid' order.id %}" class="btn btn-success btn-sm">Served/ Completed</a>
+        <a href="{% url 'order_bill' order.id %}" class="btn btn-primary btn-sm">Bill</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">No ready orders</td></tr>
+    {% endfor %}
+</tbody>
+</table>
+
+
+<h2>Completed Orders Feedback</h2>
+<table class="recent-orders">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Customer</th>
+            <th>Feedback</th>
+            <th>Rating</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for fb in feedbacks %}
+        <tr>
+            <td>{{ fb.order.id }}</td>
+            <td>{{ fb.order.customer|default:"Guest" }}</td>
+            <td>{{ fb.feedback|default:"-" }}</td>
+            <td>{{ fb.rating}}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No Feedback Available</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
