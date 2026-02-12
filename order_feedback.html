@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Feedback for Order #{{ order.id }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label>{{ form.feedback.label }}</label>
+        {{ form.feedback }}
+        {% if form.feedback.errors %}
+            <div class="text-danger small">{{ form.feedback.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="mb-3">
+        <label>{{ form.rating.label }}</label>
+        {{ form.rating }}
+        {% if form.rating.errors %}
+            <div class="text-danger small">{{ form.rating.errors }}</div>
+        {% endif %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit Feedback</button>
+</form>
+{% endblock %}

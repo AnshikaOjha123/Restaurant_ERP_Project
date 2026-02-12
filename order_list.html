@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>🧾 Orders</h2>
+    <a href="{% url 'order_create' %}" class="btn btn-primary">➕ Create Order</a>
+</div>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Customer</th>
+            <th>Ordered Items</th>
+            <th>Total Price</th>
+            <th>Status</th>
+            <th>Paid</th>
+            <th>Actions</th>
+            <th>Bill</th>
+            <th>Customer Feedback</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.customer }}</td>
+            <td>
+        <ul class="list-unstyled mb-0">
+            {% for item in order.items.all %}
+                <li>{{ item.menu_item.name }} ({{item.quantity}})</li>
+            {% empty %}
+                <li class="text-muted">No items</li>
+            {% endfor %}
+        </ul>
+    </td>
+        
+    
+            <td>₹{{ order.total_price }}</td>
+            <td>{{ order.get_status_display }}</td>
+            <td>{% if order.paid %}✅{% else %}❌{% endif %}</td>
+        <td>
+          <a href="{% url 'order_edit' order.id %}" class="btn btn-sm btn-info">Edit</a>
+          <a href="{% url 'order_delete' order.id %}" class="btn btn-sm btn-danger">Delete</a>
+          {% if not order.paid %}
+            <a href="{% url 'order_mark_paid' order.id %}" class="btn btn-sm btn-success">Mark Paid</a>
+        </td>
+          {% endif %}
+         <td> 
+          <a href="{% url 'order_bill' order.id %}" class="btn btn-sm btn-info">View Bill</a>
+         </td>
+        <td>
+    {% if order.status == "completed"%}
+    <a href="{% url 'add_feedback' order.id %}">
+        {% if order.feedback %}
+            View Feedback
+        {% else %}
+            Add Feedback
+        {% endif %}
+    </a>
+    {% else %}
+        <i>-</i>
+    {% endif %}
+    </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6">No orders found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+            

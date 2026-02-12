@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow p-4">
+  <h2 class="text-center">Restaurant Bill</h2>
+  <hr>
+
+  <p><strong>Order ID:</strong> {{ order.id }}</p>
+  <p><strong>Customer:</strong> {{ order.customer }}</p>
+  <p><strong>Date:</strong> {{ order.created_at|date:"Y-m-d H:i" }}</p>
+
+  <table class="table table-bordered mt-3">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Quantity</th>
+        <th>Total Price</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in order.items.all %}
+        <tr>
+          <td>{{ item.menu_item.name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>₹ {{ item.menu_item.price}}</td>
+          <td> {{ order.get_status_display}}</td>
+        </tr>
+        {% empty%}
+        <tr><td colspan="4" lass="text-center">No items in this order.</td></tr>
+      {% endfor %}
+      <tr>
+  <td colspan="3" class="text-end">Subtotal</td>
+  <td>₹ {{ subtotal }}</td>
+</tr>
+<tr>
+  <td colspan="3" class="text-end">GST ({{ gst_rate }})</td>
+  <td>₹ {{ gst_amount }}</td>
+</tr>
+<tr class="fw-bold">
+  <td colspan="3" class="text-end">Grand Total</td>
+  <td>₹ {{ grand_total }}</td>
+</tr>
+    </tbody>
+  </table>
+
+  <p class="text-center mt-4">Thank you for dining with us!</p>
+
+  <div class="mt-3 d-flex justify-content-between">
+    <a href="{% url 'order_detail' order.id %}" class="btn btn-secondary">Back to Dashboard</a>
+  </div>
+</div>
+{% endblock %}

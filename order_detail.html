@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Order #{{ order.id }}</h2>
+        <a href="{% url 'order_list' %}" class="btn btn-secondary">← Back to Orders</a>
+    </div>
+
+    <!-- Status Messages -->
+    {% if messages %}
+    <div class="messages mb-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Order Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Customer:</strong> {{ order.customer }}</p>
+                    <p><strong>Table:</strong> {{ order.table|default:"-" }}</p>
+                    <p><strong>Created At:</strong> {{ order.created_at }}</p>
+                    <p>
+                        <strong>Status:</strong> 
+                        <span class="badge bg-{% if order.status == 'completed' %}success{% elif order.status == 'pending' %}warning{% else %}info{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </p>
+                    <p>
+                        <strong>Paid:</strong> 
+                        {% if order.paid %}✅ Paid{% else %}❌ Unpaid{% endif %}
+                    </p>
+                    <p>
+                        <strong>Inventory Deducted:</strong> 
+                        {% if order.inventory_deducted %}✅ Yes{% else %}❌ No{% endif %}
+                    </p>
+                    <p><strong>Total Price:</strong> ₹{{ order.total_price }}</p>
+                </div>
+            </div>
+
+            <!-- Status Update Form -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Update Order Status</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'order_update_status' order.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select name="status" id="status" class="form-select">
+                                {% for status_value, status_label in order.STATUS %}
+                                    <option value="{{ status_value }}" 
+                                            {% if order.status == status_value %}selected{% endif %}>
+                                        {{ status_label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Mark Paid Button -->
+            {% if not order.paid %}
+            <div class="card mt-3">
+                <div class="card-body text-center">
+                    <a href="{% url 'order_mark_paid' order.id %}" 
+                       class="btn btn-success btn-lg"
+                       onclick="return confirm('Mark this order as paid and deduct inventory?')">
+                        ✅ Mark as Paid & Complete Order
+                    </a>
+                    <p class="text-muted mt-2 small">
+                        This will deduct inventory automatically
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Order Items</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.items.all %}
+                                <tr>
+                                    <td>{{ item.menu_item.name }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>₹{{ item.price }}</td>
+                                    <td>₹{{ item.get_cost }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No items in this order</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-dark">
+                                    <td colspan="3" class="text-end"><strong>Grand Total:</strong></td>
+                                    <td><strong>₹{{ order.total_price }}</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

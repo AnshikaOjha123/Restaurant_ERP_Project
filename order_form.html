@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>
+    {% if form.instance.pk %}
+      Edit Order #{{ form.instance.pk }}
+    {% else %}
+      New Order
+    {% endif %}
+  </h2>
+  <hr>
+
+  <form method="post">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <!-- Order details -->
+    <div class="card mb-3 shadow-sm">
+      <div class="card-header">Order Details</div>
+      <div class="card-body">
+        {% for field in form %}
+          <div class="mb-3">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+              <div class="form-text small">{{ field.help_text }}</div>
+            {% endif %}
+            {% if field.errors %}
+              <div class="text-danger small">{{ field.errors }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Order items -->
+    <div class="card mb-3 shadow-sm">
+      <div class="card-header">Order Items</div>
+      <div class="card-body">
+        {{ order_items.management_form }}
+        {% for item_form in order_items %}
+          <div class="border rounded p-3 mb-2">
+            {% if item_form.non_field_errors %}
+              <div class="alert alert-danger">
+                {{ item_form.non_field_errors }}
+              </div>
+            {% endif %}
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">{{ item_form.menu_item.label }}</label>
+                {{ item_form.menu_item }}
+                {% if item_form.menu_item.errors %}
+                  <div class="text-danger small">{{ item_form.menu_item.errors }}</div>
+                {% endif %}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">{{ item_form.quantity.label }}</label>
+                {{ item_form.quantity }}
+                {% if item_form.quantity.errors %}
+                  <div class="text-danger small">{{ item_form.quantity.errors }}</div>
+                {% endif %}
+              </div>
+              <div class="col-md-2 d-flex align-items-center">
+                {% if item_form.instance.pk %}
+                  <div class="form-check">
+                    {{ item_form.DELETE }}
+                    <label class="form-check-label">Delete</label>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <p class="text-muted">No items yet. Add items in the formset below.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="d-flex gap-2 mb-4">
+      <button type="submit" class="btn btn-primary">
+        {% if form.instance.pk %}
+          Update Order
+        {% else %}
+          Create Order
+        {% endif %}
+      </button>
+
+      {% if form.instance.pk %}
+        <a href="{% url 'order_delete' form.instance.pk %}" 
+           class="btn btn-danger"
+           onclick="return confirm('Are you sure you want to delete this order?');">
+           Delete Order
+        </a>
+      {% endif %}
+
+      <a href="{% url 'order_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
