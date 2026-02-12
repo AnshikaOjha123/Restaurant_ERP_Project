@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Menu</h2>
+    <a href="{% url 'menu_create' %}" class="btn btn-primary mb-3">Add Menu Item</a>
+    <div class="row">
+        {% for item in menus %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm menu-card">
+                {% if item.image %}
+                <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}">
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ item.name }}</h5>
+                    <p class="card-text">{{ item.description|default:"No description" }}</p>
+                    <p><strong>Price:</strong> ₹{{ item.price }}</p>
+                    <p>
+                        <span class="badge bg-info">{{ item.get_category_display }}</span>
+                        {% if item.available %}
+                            <span class="badge bg-success">Available</span>
+                        {% else %}
+                            <span class="badge bg-danger">Unavailable</span>
+                        {% endif %}
+                    </p>
+
+                    <p class="mb-1"><strong>Ingredients:</strong>
+                    {% if item.menu_ingredients.exists %}
+                           <ul class="mb-0">
+                        {% for ing in item.menu_ingredients.all %}
+                         <li>{{ ing.ingredient.name }} — {{ ing.quantity }}</li>
+                        {% endfor %}
+                            </ul>
+                    {% else %}
+                    <span class="text-muted">No ingredients linked</span>
+                    {% endif %}
+</p>
+
+                    <div class="mt-auto d-flex justify-content-between">
+                        <a href="{% url 'edit_menu' item.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                        <a href="{% url 'delete_menu' item.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p>No menu items found.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

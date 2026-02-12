@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Menu Item</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- Parent Menu Item Form -->
+        <div class="card mb-4 p-3 shadow-sm">
+            {{ form.as_p }}
+        </div>
+
+        <!-- Ingredient Formset Section -->
+        <h4>Ingredients</h4>
+        {{ formset.management_form }}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Ingredient</th>
+                    <th>Quantity</th>
+                    <th>Delete?</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in formset %}
+                <tr>
+                    <td>{{ form.ingredient }}</td>
+                    <td>{{ form.quantity }}</td>
+                    <td>
+                        {% if form.DELETE %}
+                            {{ form.DELETE }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <!-- Hidden ID field (important for edit) -->
+                    {% if form.id %}{{ form.id }}{% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-success">Save</button>
+        <a href="{% url 'menu_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
