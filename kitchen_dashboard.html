@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-2">
+    <h2 class="text-center mb-2">Kitchen Dashboard</h2>
+    <div class="row" id="orders-container">
+        {% include 'kitchen/kitchen_orders_list.html' %}
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Fetch orders every 5 seconds
+    function fetchOrders() {
+        $.ajax({
+            url: "{% url 'kitchen_orders_list' %}",
+            type: "GET",
+            success: function(data) {
+                $('#orders-container').html(data);
+            }
+        });
+    }
+
+    setInterval(fetchOrders, 5000);
+</script>
+{% endblock %}
